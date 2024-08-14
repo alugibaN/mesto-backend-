@@ -1,12 +1,32 @@
-import { postUser, getUsers, getUserId, changingUser, changingAvatar } from "../controllers/user";
-import { Router } from "express";
+import { celebrate, Joi } from 'celebrate';
+import { Router } from 'express';
+import {
+  getUsers, getUserId, changingUser, changingAvatar, getUserMe,
+} from '../controllers/user';
 
 const routerUser = Router();
-routerUser.post('/', postUser);
 routerUser.get('/', getUsers);
-routerUser.get('/:userId', getUserId);
-routerUser.patch('/me', changingUser);
-routerUser.patch('/me/avatar', changingAvatar);
+routerUser.get('/me', getUserMe);
 
+routerUser.get('/:userId', celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().length(24).hex(),
+  }),
+}), getUserId);
 
-export default routerUser
+routerUser.patch('/me', celebrate({
+  body: Joi.object().keys({
+    user: Joi.object().required(),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(200),
+  }),
+}), changingUser);
+
+routerUser.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    user: Joi.object().required(),
+    avatar: Joi.string().uri(),
+  }),
+}), changingAvatar);
+
+export default routerUser;

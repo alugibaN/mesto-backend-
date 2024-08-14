@@ -30,6 +30,15 @@
       ]
   },
   "rules": {
+    "no-console":"off" ,
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allow": [
+                    "_id"
+                ]
+            }
+        ],
       "import/extensions": [
           "error",
           "ignorePackages",
@@ -38,6 +47,5 @@
               "ts": "never"
           }
       ]
-  },
-  "eslint no-underscore-dangle": ["error", { "allow": ["_id"] }]
+  }
 }
