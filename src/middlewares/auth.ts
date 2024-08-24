@@ -5,16 +5,13 @@ import { errorAuth } from '../utils/const';
 
 export default (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
-  console.log(req.headers);
-
   if (!authorization || !authorization.startsWith('Bearer')) {
     return res
       .status(errorAuth)
       .send({ message: 'Необходима авторизация' });
   }
 
-  const token = authorization.replace('Bearer =', '');
-  console.log(token);
+  const token = authorization.replace('Bearer ', '');
   let payload;
   try {
     payload = jwt.verify(token, 'some-secret-key');

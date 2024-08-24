@@ -9,11 +9,21 @@ import routerCard from './routes/card';
 import auth from './middlewares/auth';
 import { login, postUser } from './controllers/user';
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
+const cors = require('cors');
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
+
+const corsOptions = {
+  origin: 'http://localhost:8080', // Укажите свой фронтенд домен
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 

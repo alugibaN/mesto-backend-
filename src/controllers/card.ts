@@ -22,7 +22,7 @@ export const createCard = (req:Request, res:Response, next:NextFunction) => {
 export const getCards = (req:Request, res:Response, next:NextFunction) => Card.find({})
   .then((card) => {
     if (!card) throw new RequestError('Переданы некорректные данные');
-    return res.send({ cards: card });
+    return res.send(card);
   })
   .catch(next);
 
