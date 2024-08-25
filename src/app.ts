@@ -17,25 +17,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 
-const corsOptions = {
-  origin: 'http://localhost:8080', // Укажите свой фронтенд домен
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
-app.use(cors(corsOptions));
-
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.use(requestLogger);
+app.use(cors());
 
-app.get('/crash-test', () => {
+app.get('/crash-test', cors(), () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-app.post('/signin', celebrate({
+app.post('/signin', cors(), celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(200),
@@ -44,7 +37,7 @@ app.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
-app.post('/signup', celebrate({
+app.post('/signup', cors(), celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(200),
@@ -56,8 +49,8 @@ app.post('/signup', celebrate({
 
 app.use(auth);
 
-app.use('/cards', routerCard);
-app.use('/users', routerUser);
+app.use('/cards', cors(), routerCard);
+app.use('/users', cors(), routerUser);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(errorFind).send({ message: 'Запрашиваемый ресурс не найден' });
