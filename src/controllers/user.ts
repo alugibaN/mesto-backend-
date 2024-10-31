@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret, SignOptions } from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import AuthError from '../errors/auth-err';
 import RequestError from '../errors/request-err';
 import User from '../models/user';
 import NotFoundError from '../errors/not-found-err';
+
+dotenv.config({ path: ['.env', '.env.deploy'] });
+
+console.log(process.env.PORT);
 
 export const postUser = (req: Request, res: Response, next:NextFunction) => {
   const {
@@ -78,7 +83,10 @@ export const login = (req: Request, res: Response, next:NextFunction) => {
 
         .then((matched) => {
           if (!matched) throw new AuthError('Неправильные почта или пароль');
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+          const secretOrPrivateKey: Secret = process.env.JWT_SECRET as Secret;
+          const options: SignOptions = { expiresIn: '7d' };
+          const token = jwt.sign({ _id: user._id }, secretOrPrivateKey, options);
+          // const token = jwt.sign({ _id: user._id }, secret, { expiresIn: '7d' });
           return res.cookie('Bearer ', token, {
             maxAge: 3600000 * 24 * 7,
             httpOnly: true,
